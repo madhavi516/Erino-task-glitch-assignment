@@ -17,21 +17,35 @@ export function computePriorityWeight(priority: Task['priority']): 3 | 2 | 1 {
 }
 
 export function withDerived(task: Task): DerivedTask {
+  let roi: number | null = null;
+
+  const revenue = Number(task.revenue);
+  const timeTaken = Number(task.timeTaken);
+
+  if (!isNaN(revenue) && !isNaN(timeTaken) && timeTaken > 0) {
+    roi = revenue / timeTaken;
+    roi = parseFloat(roi.toFixed(2)); // 2 decimals
+  } else {
+    roi = null; // safe fallback
+  }
+
   return {
     ...task,
-    roi: computeROI(task.revenue, task.timeTaken),
-    priorityWeight: computePriorityWeight(task.priority),
+    roi,
   };
 }
+export function sortTasks(tasks: DerivedTask[]): DerivedTask[] {
+  const priorityOrder: Record<string, number> = { High: 3, Medium: 2, Low: 1 };
 
-export function sortTasks(tasks: ReadonlyArray<DerivedTask>): DerivedTask[] {
   return [...tasks].sort((a, b) => {
-    const aROI = a.roi ?? -Infinity;
-    const bROI = b.roi ?? -Infinity;
-    if (bROI !== aROI) return bROI - aROI;
-    if (b.priorityWeight !== a.priorityWeight) return b.priorityWeight - a.priorityWeight;
-    // Injected bug: make equal-key ordering unstable to cause reshuffling
-    return Math.random() < 0.5 ? -1 : 1;
+    // 1️⃣ ROI descending
+    if ((a.roi ?? 0) !== (b.roi ?? 0)) return (b.roi ?? 0) - (a.roi ?? 0);
+
+    // 2️⃣ Priority descending
+    if (a.priority !== b.priority) return priorityOrder[b.priority] - priorityOrder[a.priority];
+
+    // 3️⃣ Tie-breaker: alphabetical by title
+    return a.title.localeCompare(b.title);
   });
 }
 
