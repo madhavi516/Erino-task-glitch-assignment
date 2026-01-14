@@ -32,7 +32,7 @@ export function withDerived(task: Task): DerivedTask {
   return {
     ...task,
     roi,
-  };
+  } as DerivedTask;
 }
 export function sortTasks(tasks: DerivedTask[]): DerivedTask[] {
   const priorityOrder: Record<string, number> = { High: 3, Medium: 2, Low: 1 };
