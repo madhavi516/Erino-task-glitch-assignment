@@ -7,4 +7,9 @@
 5. ROI Calculation Errors
 
 
-   ** Live App: ** [ Click here] 
+   ** Live App: ** [ Click here] (erino-task-glitch-assignment-rc74-h8envoplm.vercel.app )
+
+** Instructions to run locally: **
+1. git clone...
+2. npm install
+3. npm run dev
